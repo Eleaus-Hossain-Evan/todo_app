@@ -17,9 +17,11 @@ class KTextField extends StatefulWidget {
     this.prefixIcon,
     this.borderRadius = 10,
     this.width = 280,
+    this.textColor = Colors.white,
   }) : super(key: key);
   final TextEditingController controller;
   final String text;
+  Color textColor;
   Function(String value)? onChanged;
   bool isDate, isTime, isObscure, isHintText, isEnable;
   Widget? suffixIcon, prefixIcon;
@@ -35,12 +37,19 @@ class _KTextFieldState extends State<KTextField> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: widget.width,
-      height: 50.h,
+      // height: 50.h,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(widget.borderRadius),
         child: TextField(
           controller: widget.controller,
           readOnly: !widget.isEnable,
+          textAlign: TextAlign.start,
+          cursorColor: Colors.white,
+          textInputAction: TextInputAction.newline,
+          keyboardType: TextInputType.multiline,
+          minLines: null,
+          maxLines: null,
+          // expands: true,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.only(
               left: 8.w,
@@ -48,30 +57,24 @@ class _KTextFieldState extends State<KTextField> {
               bottom: 3.h,
             ),
             isDense: false,
-            border: OutlineInputBorder(
+            border: UnderlineInputBorder(
               //borderSide: BorderSide(color: Colors.black26, width: 3.w),
               borderSide: BorderSide(
-                color: widget.isEnable
-                    ? Theme.of(context).secondaryHeaderColor
-                    : Colors.transparent,
+                color: widget.isEnable ? Colors.white70 : Colors.transparent,
                 width: 3.w,
               ),
               borderRadius: BorderRadius.circular(widget.borderRadius),
             ),
-            enabledBorder: OutlineInputBorder(
+            enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(
-                  color: widget.isEnable
-                      ? Theme.of(context).secondaryHeaderColor
-                      : Colors.transparent,
+                  color: widget.isEnable ? Colors.white70 : Colors.transparent,
                   width: 3.w,
                 ),
                 //borderSide: BorderSide(color: Colors.black26, width: 3.w),
                 borderRadius: BorderRadius.circular(widget.borderRadius)),
-            focusedBorder: OutlineInputBorder(
+            focusedBorder: UnderlineInputBorder(
               borderSide: BorderSide(
-                  color: widget.isEnable
-                      ? Theme.of(context).primaryColor
-                      : Colors.transparent,
+                  color: widget.isEnable ? Colors.white70 : Colors.transparent,
                   width: 3.w),
               // borderSide:
               //     BorderSide(color: KColor.customerPrimaryColor, width: 2.w),
@@ -104,7 +107,7 @@ class _KTextFieldState extends State<KTextField> {
           style: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: 18.sp,
-            color: Colors.black87,
+            color: widget.textColor,
           ),
           obscureText: widget.isObscure ? isVisible : false,
           onChanged: widget.onChanged,

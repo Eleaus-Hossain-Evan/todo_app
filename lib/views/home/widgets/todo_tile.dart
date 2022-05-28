@@ -37,6 +37,8 @@ class TodoTile extends StatelessWidget {
                   children: [
                     Text(
                       todo.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.lato(
                         textStyle: TextStyle(
                           fontSize: 16.sp,

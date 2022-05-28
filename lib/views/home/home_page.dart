@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:todo_app/controller/home_controller.dart';
 import 'package:todo_app/views/home/widgets/add_todo.dart';
 import 'package:todo_app/views/home/widgets/todo_tile.dart';
+import 'package:todo_app/views/search/search_page.dart';
 import 'package:todo_app/views/theme/theme.dart';
 import 'package:todo_app/views/widgets/k_textfield.dart';
 
@@ -24,7 +25,9 @@ class HomePage extends StatelessWidget {
         title: const Text("Todo's"),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Get.to(() => SearchPage());
+            },
             icon: const Icon(Icons.search),
           ),
         ],

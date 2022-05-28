@@ -50,24 +50,24 @@ class TodoModel extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      'title': title,
-      'isCompleted': isCompleted ? 1 : 0,
-      'createdAt': createdAt.millisecondsSinceEpoch.toString(),
-      'color': color,
+      columnTitle: title,
+      columnIsCompleted: isCompleted ? 1 : 0,
+      columnCreatedAt: createdAt.millisecondsSinceEpoch.toString(),
+      columnColor: color,
     };
   }
 
   factory TodoModel.fromMap(Map<String, dynamic> map) {
     return TodoModel(
-      id: map['id']?.toInt(),
-      title: map['title'],
-      isCompleted: map['isCompleted'] == 1,
+      id: map[columnId]?.toInt(),
+      title: map[columnTitle],
+      isCompleted: map[columnIsCompleted] == 1,
       createdAt: DateTime.fromMillisecondsSinceEpoch(
         int.parse(
-          map['createdAt'].toString(),
+          map[columnCreatedAt].toString(),
         ),
       ),
-      color: map['color'],
+      color: map[columnColor],
     );
   }
 

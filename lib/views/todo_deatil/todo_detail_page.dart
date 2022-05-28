@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/state_manager.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import 'package:todo_app/controller/home_controller.dart';
 import 'package:todo_app/model/todo_model.dart';
 import 'package:todo_app/views/theme/theme.dart';
 
+import '../widgets/k_elevated_button.dart';
 import '../widgets/k_textfield.dart';
 
 class TodoDetailPage extends StatelessWidget {
@@ -17,24 +19,38 @@ class TodoDetailPage extends StatelessWidget {
   final titleController = TextEditingController();
 
   var isEditable = false.obs;
+  var isCompleteForThis = false.obs;
+  var colorIndex = 0.obs;
 
   @override
   Widget build(BuildContext context) {
+    Logger().wtf(todo);
     return GetBuilder<HomeController>(
       builder: (controller) {
         titleController.text = todo.title;
-        // controller.isCompleted(todo.isCompleted);
+        controller.isCompleted(todo.isCompleted);
+        colorIndex(todo.color);
         return Scaffold(
           // backgroundColor: controller.colorList[todo.color],
-          body: SafeArea(
+          appBar: AppBar(
+            foregroundColor: Colors.black87,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    controller.deleteTodo(todo);
+                    Get.back();
+                  },
+                  icon: const Icon(Icons.delete_forever))
+            ],
+          ),
+          body: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 20.h,
-                  ),
                   Text(
                     DateFormat('EEEE - MMMM d, y,\n h:mm a')
                         .format(todo.createdAt),
@@ -57,15 +73,24 @@ class TodoDetailPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       color: controller.colorList[todo.color],
                     ),
-                    child: Obx(() => KTextField(
-                          controller: titleController,
-                          isEnable: isEditable.value,
-                          text: todo.title,
-                          isHintText: true,
-                        )),
+                    child: Obx(() => isEditable.value
+                        ? KTextField(
+                            controller: titleController,
+                            isEnable: isEditable.value,
+                            text: todo.title,
+                            isHintText: true,
+                          )
+                        : Text(
+                            todo.title,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 18.sp,
+                              color: Colors.white,
+                            ),
+                          )),
                   ),
                   SizedBox(
-                    height: 10.h,
+                    height: 20.h,
                   ),
                   Obx(
                     () => Align(
@@ -76,9 +101,7 @@ class TodoDetailPage extends StatelessWidget {
                                   EdgeInsets.symmetric(horizontal: 20.w),
                               label: Text(
                                 controller.isCompleted.value
-                                    ? todo.isCompleted
-                                        ? "Completed"
-                                        : "Incomplete"
+                                    ? "Completed"
                                     : "Incomplete",
                                 style: TextStyle(
                                   fontSize: 18.sp,
@@ -90,10 +113,12 @@ class TodoDetailPage extends StatelessWidget {
                               elevation: 6,
                               shadowColor: Colors.grey[60],
                               padding: const EdgeInsets.all(8.0),
-                              selected: controller.isCompleted.value,
+                              selected: isCompleteForThis.value,
                               selectedColor: KTheme.secondaryColor,
                               onSelected: (bool selected) {
-                                controller.isCompleted.value = selected;
+                                isCompleteForThis.value = selected;
+                                controller
+                                    .isCompleted(!controller.isCompleted.value);
                               },
                             )
                           : Chip(
@@ -111,18 +136,86 @@ class TodoDetailPage extends StatelessWidget {
                               elevation: 0,
                               shadowColor: Colors.grey[60],
                               padding: const EdgeInsets.all(8.0),
+                              side: BorderSide(
+                                color: todo.isCompleted
+                                    ? KTheme.primaryColor
+                                    : KTheme.secondaryColor,
+                              ),
                             ),
                     ),
                   ),
                   SizedBox(
-                    height: 10.h,
+                    height: 20.h,
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      isEditable(true);
-                    },
-                    child: const Text("Edit"),
+                  Obx(
+                    () => isEditable.value
+                        ? SizedBox(
+                            height: 40.h,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: controller.colorList.length,
+                              separatorBuilder:
+                                  (BuildContext context, int index) {
+                                return SizedBox(width: 5.w);
+                              },
+                              itemBuilder: (BuildContext context, int index) {
+                                return Obx(() => InkWell(
+                                      onTap: () => colorIndex.value = index,
+                                      child: CircleAvatar(
+                                        backgroundColor:
+                                            controller.colorList[index],
+                                        child: colorIndex.value == index
+                                            ? const Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                              )
+                                            : const SizedBox.shrink(),
+                                        radius: 18.r,
+                                      ),
+                                    ));
+                              },
+                            ),
+                          )
+                        : const SizedBox.shrink(),
                   ),
+                  SizedBox(
+                    height: 20.h,
+                  ),
+                  Obx(
+                    () => !isEditable.value
+                        ? KElevatedButton(
+                            onPressed: () {
+                              isEditable(true);
+                            },
+                            child: const Text("Edit"),
+                          )
+                        : KOutlinedButton(
+                            onPressed: () {
+                              controller.updateData(
+                                TodoModel(
+                                  id: todo.id,
+                                  title: titleController.text,
+                                  createdAt: DateTime.now(),
+                                  isCompleted: controller.isCompleted.value,
+                                  color: colorIndex.value,
+                                ),
+                              );
+                              Get.back();
+                            },
+                            child: const Text("Update Todo"),
+                          ),
+                  ),
+                  Obx(() => isEditable.value
+                      ? KElevatedButton(
+                          onPressed: () {
+                            // Get.back();
+                            isEditable(false);
+                          },
+                          child: const Text("Cancel"),
+                          primaryColor: Colors.orangeAccent.shade400,
+                          secondaryColor: Colors.redAccent.shade100,
+                        )
+                      : const SizedBox.shrink()),
                 ],
               ),
             ),

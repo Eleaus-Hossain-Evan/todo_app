@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:todo_app/controller/home_controller.dart';
 import 'package:todo_app/views/theme/theme.dart';
 
+import '../../widgets/k_elevated_button.dart';
+
 class AddTodo extends StatelessWidget {
   AddTodo({Key? key}) : super(key: key);
 
@@ -123,7 +125,7 @@ class AddTodo extends StatelessWidget {
               actions: [
                 Padding(
                   padding: EdgeInsets.all(10.w),
-                  child: ElevatedButton(
+                  child: KElevatedButton(
                     onPressed: () {
                       if (todoEditingController.text.isNotEmpty) {
                         controller.insertTodo(
@@ -139,16 +141,6 @@ class AddTodo extends StatelessWidget {
                     child: controller.loading.isTrue
                         ? const CircularProgressIndicator()
                         : const Text("Add Todo"),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith(
-                        (states) => states.contains(MaterialState.pressed)
-                            ? KTheme.secondaryColor
-                            : KTheme.primaryColor,
-                      ),
-                      minimumSize: MaterialStateProperty.all(
-                        Size.fromHeight(40.h),
-                      ),
-                    ),
                   ),
                 ),
               ],

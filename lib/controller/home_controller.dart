@@ -6,8 +6,8 @@ import 'package:todo_app/model/todo_model.dart';
 
 class HomeController extends GetxController {
   final loading = false.obs;
-  final isEditable = false.obs;
   final RxList<TodoModel> todoList = <TodoModel>[].obs;
+  final RxList<TodoModel> filteredTodo = <TodoModel>[].obs;
 
   final colorList = const [
     Color(0xFF4e5ae8),
@@ -88,6 +88,14 @@ class HomeController extends GetxController {
     Logger().wtf("Successfully updated todo: $id");
     await getAllTodos();
     loading(false);
+    update();
+  }
+
+  void filterList(value) {
+    filteredTodo(todoList
+        .where((todo) => todo.title.toLowerCase().contains(value.toLowerCase()))
+        .toList());
+    filteredTodo.refresh();
     update();
   }
 }
