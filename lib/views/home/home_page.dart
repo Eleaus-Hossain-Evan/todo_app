@@ -30,6 +30,69 @@ class HomePage extends StatelessWidget {
             },
             icon: const Icon(Icons.search),
           ),
+          // PopupMenuButton<int>(
+          //   child: IconButton(
+          //       onPressed: () {}, icon: const Icon(Icons.more_vert_rounded)),
+          //   itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+          //     const PopupMenuItem<int>(
+          //       value: 0,
+          //       child: Text("Sort by ID ASC"),
+          //     ),
+          //     const PopupMenuItem<int>(
+          //       value: 1,
+          //       child: Text("Sort by ID DES"),
+          //     ),
+          //     const PopupMenuItem<int>(
+          //       value: 2,
+          //       child: Text("Sort by Date ASC"),
+          //     ),
+          //     const PopupMenuItem<int>(
+          //       value: 3,
+          //       child: Text("Sort by Date DES"),
+          //     )
+          //   ],
+          //   onSelected: (int value) {
+          //     print(value);
+          //   },
+          // )
+          PopupMenuButton(
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+              PopupMenuItem<int>(
+                value: 0,
+                child: Text("Sort by ID ASC"),
+                onTap: () {},
+              ),
+              const PopupMenuItem<int>(
+                value: 1,
+                child: Text("Sort by ID DES"),
+              ),
+              const PopupMenuItem<int>(
+                value: 2,
+                child: Text("Sort by Date ASC"),
+              ),
+              const PopupMenuItem<int>(
+                value: 3,
+                child: Text("Sort by Date DES"),
+              )
+            ],
+            onSelected: (int value) {
+              switch (value) {
+                case 0:
+                  controller.sortByID();
+                  break;
+                case 1:
+                  controller.sortByIdDes();
+                  break;
+                case 2:
+                  controller.sortByDate();
+                  break;
+                case 3:
+                  controller.sortByDateDes();
+                  break;
+                default:
+              }
+            },
+          )
         ],
       ),
       body: Obx(

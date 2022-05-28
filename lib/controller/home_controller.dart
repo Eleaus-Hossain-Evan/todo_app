@@ -98,4 +98,20 @@ class HomeController extends GetxController {
     filteredTodo.refresh();
     update();
   }
+
+  void sortByID() {
+    todoList.sort((a, b) => a.id!.compareTo(b.id!));
+  }
+
+  void sortByDate() {
+    todoList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+  }
+
+  void sortByIdDes() {
+    todoList.sort((a, b) => b.id!.compareTo(a.id!));
+  }
+
+  void sortByDateDes() {
+    todoList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
 }
