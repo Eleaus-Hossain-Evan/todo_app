@@ -2,12 +2,14 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class KSharedPreference extends GetxController {
-  SharedPreferences? pref;
+  static SharedPreferences? _pref;
 
   String isNew = "isNew";
 
+  static Future init() async => _pref = await SharedPreferences.getInstance();
+
   Future<void> initializeData() async {
-    pref = await SharedPreferences.getInstance();
+    await init();
   }
 
   @override
@@ -17,9 +19,9 @@ class KSharedPreference extends GetxController {
   }
 
   bool? getBool(String val) {
-    if (pref != null) {
-      if (pref!.getBool(val) != null) {
-        return pref!.getBool(val)!;
+    if (_pref != null) {
+      if (_pref!.getBool(val) != null) {
+        return _pref!.getBool(val)!;
       } else {
         return null;
       }
@@ -29,9 +31,9 @@ class KSharedPreference extends GetxController {
   }
 
   String? getString(String val) {
-    if (pref != null) {
-      if (pref!.getString(val) != null) {
-        return pref!.getString(val)!;
+    if (_pref != null) {
+      if (_pref!.getString(val) != null) {
+        return _pref!.getString(val)!;
       } else {
         return null;
       }
@@ -41,15 +43,15 @@ class KSharedPreference extends GetxController {
   }
 
   setString(String key, String val) {
-    if (pref != null) {
-      pref!.setString(key, val);
+    if (_pref != null) {
+      _pref!.setString(key, val);
       update();
     }
   }
 
   setBool(String key, bool val) {
-    if (pref != null) {
-      pref!.setBool(key, val);
+    if (_pref != null) {
+      _pref!.setBool(key, val);
       update();
     }
   }

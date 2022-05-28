@@ -50,7 +50,7 @@ class OnboardingPage extends StatelessWidget {
                       ? InkWell(
                           onTap: () {
                             _pref.setBool(_pref.isNew, false);
-                            Get.to(const HomePage());
+                            Get.off(() => HomePage());
                           },
                           child: const Text("Done"),
                         )

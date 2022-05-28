@@ -10,7 +10,11 @@ class DbController extends GetxController {
 
   static const int _version = 1;
   static const _databaseName = "TodoDatabase.db";
-  static const String _tableName = "todo";
+
+  DbController._();
+
+  static final DbController _instance = DbController._();
+  factory DbController.instance() => _instance;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -32,11 +36,12 @@ class DbController extends GetxController {
   FutureOr<void> _onCreate(database, version) {
     Logger().v("creating a Database");
     return database.execute(
-      "CREATE TABLE $_tableName("
-      "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-      "todo TEXT, "
-      "startTime STRING, "
-      "isCompleted INTEGER)",
+      "CREATE TABLE $tableTodo("
+      "$columnId INTEGER PRIMARY KEY AUTOINCREMENT, "
+      "$columnTitle TEXT not null, "
+      "$columnCreatedAt STRING not null, "
+      "$columnIsCompleted INTEGER not null, "
+      "$columnColor INTEGER not null)",
     );
   }
 
@@ -47,46 +52,52 @@ class DbController extends GetxController {
 
   Future<List<TodoModel>?> getAll() async {
     Logger().v("getting all todo's");
-    var items = await _database!.query(_tableName, orderBy: 'id');
+    var db = await database;
+    List<Map<String, dynamic>> items =
+        await db.query(tableTodo, orderBy: columnId);
     List<TodoModel> itemList =
         items.isNotEmpty ? items.map((e) => TodoModel.fromMap(e)).toList() : [];
-    close();
+
     return itemList;
   }
 
-  static Future<int> insert(TodoModel? todo) async {
+  Future<int> insert(TodoModel todo) async {
     Logger().v("insert $todo");
-    return await _database?.insert(_tableName, todo!.toMap()) ?? 1;
+    var db = await database;
+    var result = await db.insert(tableTodo, todo.toMap());
+    return result;
   }
 
-  static Future<List<Map<String, dynamic>>> query() async {
+  Future<List<Map<String, dynamic>>> query() async {
     Logger().v("query function called");
-    return await _database!.query(_tableName);
+    var db = await database;
+    return await db.query(tableTodo);
   }
 
-  static delete(TodoModel todo) async {
+  Future<int> delete(TodoModel todo) async {
     Logger().v("delete $todo");
-    return await _database!
-        .delete(_tableName, where: 'id=?', whereArgs: [todo.id]);
+    var db = await database;
+    var result =
+        await db.delete(tableTodo, where: '$columnId=?', whereArgs: [todo.id]);
+
+    return result;
   }
 
-  static updateComplete(int id, int completed) async {
+  Future<int> updateComplete(int id, int completed) async {
     Logger().v("update single todo: $id");
-    return await _database!.rawUpdate('''
+    var db = await database;
+    var result = await db.rawUpdate('''
       UPDATE todo
       SET isCompleted = ?
-      WHERE id =?
+      WHERE $columnId =?
     ''', [completed.toString(), id]);
+
+    return result;
   }
 
   Future<int> updateData(TodoModel todo) async {
     Logger().v("update $todo");
-    return await _database!
-        .update(_tableName, todo.toMap(), where: "id=?", whereArgs: [todo.id]);
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
+    return await _database!.update(tableTodo, todo.toMap(),
+        where: "$columnId=?", whereArgs: [todo.id]);
   }
 }

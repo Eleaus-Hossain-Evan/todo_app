@@ -2,56 +2,72 @@ import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
 
+const String tableTodo = 'todo';
+const String columnId = '_id';
+const String columnTitle = 'title';
+const String columnCreatedAt = 'createdAt';
+const String columnIsCompleted = 'isCompleted';
+const String columnColor = 'color';
+
 // ignore: must_be_immutable
 class TodoModel extends Equatable {
   int? id;
-  String todo;
-  bool isCompleted;
-  DateTime createdAt;
+  final String title;
+  final bool isCompleted;
+  final DateTime createdAt;
+  final int color;
 
   TodoModel({
     this.id,
-    required this.todo,
+    required this.title,
     required this.isCompleted,
     required this.createdAt,
+    required this.color,
   });
 
   factory TodoModel.init() => TodoModel(
-        todo: '',
+        title: '',
         isCompleted: false,
         createdAt: DateTime.now(),
+        color: 0,
       );
 
   TodoModel copyWith({
     int? id,
-    String? todo,
+    String? title,
     bool? isCompleted,
     DateTime? createdAt,
+    int? color,
   }) {
     return TodoModel(
       id: id ?? this.id,
-      todo: todo ?? this.todo,
+      title: title ?? this.title,
       isCompleted: isCompleted ?? this.isCompleted,
       createdAt: createdAt ?? this.createdAt,
+      color: color ?? this.color,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'todo': todo,
-      'isCompleted': isCompleted ? "1" : "0",
+      'title': title,
+      'isCompleted': isCompleted ? 1 : 0,
       'createdAt': createdAt.millisecondsSinceEpoch.toString(),
+      'color': color,
     };
   }
 
   factory TodoModel.fromMap(Map<String, dynamic> map) {
     return TodoModel(
       id: map['id']?.toInt(),
-      todo: map['todo'] ?? '',
-      isCompleted: map['isCompleted'] == "1",
-      createdAt:
-          DateTime.fromMillisecondsSinceEpoch(int.parse(map['createdAt'])),
+      title: map['title'],
+      isCompleted: map['isCompleted'] == 1,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(
+        int.parse(
+          map['createdAt'].toString(),
+        ),
+      ),
+      color: map['color'],
     );
   }
 
@@ -62,9 +78,17 @@ class TodoModel extends Equatable {
 
   @override
   String toString() {
-    return 'TodoModel(id: $id, todo: $todo, isCompleted: $isCompleted, createdAt: $createdAt)';
+    return 'TodoModel(id: $id, title: $title, isCompleted: $isCompleted, createdAt: $createdAt, color: $color)';
   }
 
   @override
-  List<Object> get props => [id!, todo, isCompleted, createdAt];
+  List<Object> get props {
+    return [
+      id!,
+      title,
+      isCompleted,
+      createdAt,
+      color,
+    ];
+  }
 }
